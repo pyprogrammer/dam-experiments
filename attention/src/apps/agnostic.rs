@@ -123,12 +123,18 @@ where
         config.vocab_dim,
         v_receiver,
         v_vec_snd,
-        |new, old: Option<Vector<T>>| match old {
+        move |new, old: Option<Vector<T>>| match old {
             Some(mut v) => {
                 v.value.push(new);
                 v
             }
-            None => Vector { value: vec![new] },
+            None => {
+                let mut v = Vector {
+                    value: Vec::with_capacity(config.vocab_dim),
+                };
+                v.value.push(new);
+                v
+            }
         },
         ReduceTimings {
             initiation_interval: 1,
@@ -168,7 +174,6 @@ where
                 old_val
             }
             None => {
-                //
                 v_vector.value.iter_mut().for_each(|vec_val| {
                     *vec_val = *vec_val * exp;
                 });
