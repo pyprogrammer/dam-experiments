@@ -275,7 +275,7 @@ checksum = "248e3bacc7dc6baa3b21e405ee045c3047101a49145e7e9eca583ab4c2ca5345"
 [[package]]
 name = "dam"
 version = "0.1.0"
-source = "git+https://github.com/stanford-ppl/DAM-RS.git?branch=spsc#03ccff87a1ff7a70e573e4de3c855db86249b031"
+source = "git+https://github.com/stanford-ppl/DAM-RS.git?branch=spsc#cb9c3cda5d9dc39a06b23eacb3418591f53a6c7e"
 dependencies = [
  "bson",
  "cfg-if",
@@ -301,7 +301,7 @@ dependencies = [
 [[package]]
 name = "dam-macros"
 version = "0.1.0"
-source = "git+https://github.com/stanford-ppl/DAM-RS.git?branch=spsc#03ccff87a1ff7a70e573e4de3c855db86249b031"
+source = "git+https://github.com/stanford-ppl/DAM-RS.git?branch=spsc#cb9c3cda5d9dc39a06b23eacb3418591f53a6c7e"
 dependencies = [
  "proc-macro2",
  "quote",

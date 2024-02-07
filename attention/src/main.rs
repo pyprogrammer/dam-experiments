@@ -3,7 +3,10 @@ pub mod templates;
 pub mod utils;
 
 use clap::{Args, Parser, Subcommand};
-use dam::{simulation::ProgramBuilder, utility_contexts::*};
+use dam::{
+    simulation::{ProgramBuilder, RunMode, RunOptionsBuilder},
+    utility_contexts::*,
+};
 use itertools::izip;
 use ndarray::ArcArray;
 
@@ -36,6 +39,10 @@ struct CommandLineInterface {
     /// Validate results afterwards
     #[arg(long, default_value_t = false)]
     validate: bool,
+
+    /// Limit the number of worker threads
+    #[arg(long)]
+    workers: Option<usize>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -269,9 +276,17 @@ fn main() {
         builder.add_child(ConsumerContext::new(output));
     }
 
+    let run_opts = match args.workers {
+        Some(workers) => RunOptionsBuilder::default()
+            .mode(RunMode::Constrained(workers))
+            .build()
+            .unwrap(),
+        None => Default::default(),
+    };
+
     let executed = builder
         .initialize(Default::default())
         .expect("Failed to initialize and validate graph")
-        .run(Default::default());
+        .run(run_opts);
     println!("Elapsed Cycles: {}", executed.elapsed_cycles().unwrap());
 }
