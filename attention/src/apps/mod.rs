@@ -82,6 +82,7 @@ mod tests {
                 MatmulTiming {
                     dot_latency: 1,
                     dot_ii: 1,
+                    reset_time: 0,
                 },
                 crate::templates::MatmulBehavior::Buffered,
                 ShapeInfo {
@@ -131,10 +132,12 @@ mod tests {
                 sum_timings: ReduceTimings {
                     initiation_interval: 1,
                     latency: 1,
+                    reset_time: 0,
                 },
                 matmul_timings: MatmulTiming {
                     dot_latency: 1,
                     dot_ii: 1,
+                    reset_time: 0,
                 },
             },
         );
@@ -187,6 +190,7 @@ mod tests {
                 MatmulTiming {
                     dot_latency: 1,
                     dot_ii: 1,
+                    reset_time: 0,
                 },
                 crate::templates::MatmulBehavior::Buffered,
                 ShapeInfo {
@@ -224,14 +228,17 @@ mod tests {
                 max_config: ScanTimings {
                     initiation_interval: 1,
                     latency: 1,
+                    reset_time: 0,
                 },
                 residual_config: ReduceTimings {
                     initiation_interval: 1,
                     latency: 1,
+                    reset_time: 0,
                 },
                 prod_config: ReduceTimings {
                     initiation_interval: 1,
                     latency: 1,
+                    reset_time: 0,
                 },
                 scale_config: FlatmapTimings {
                     initiation_interval: 1,

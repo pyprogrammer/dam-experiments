@@ -1,7 +1,6 @@
 pub mod apps;
 pub mod templates;
 pub mod utils;
-
 use clap::{Args, Parser, Subcommand};
 use dam::{
     simulation::{ProgramBuilder, RunMode, RunOptionsBuilder},
@@ -39,6 +38,10 @@ struct CommandLineInterface {
     /// Validate results afterwards
     #[arg(long, default_value_t = false)]
     validate: bool,
+
+    /// Include QK^T computation
+    #[arg(long, default_value_t = false)]
+    compute_qkt: bool,
 
     /// Limit the number of worker threads
     #[arg(long)]
@@ -105,6 +108,9 @@ struct CommonTimings {
 
     #[arg(long, default_value_t = 1)]
     div_latency: u64,
+
+    #[arg(long, default_value_t = 0)]
+    reset_time: u64,
 }
 
 fn main() {
@@ -131,9 +137,10 @@ fn main() {
     let mut builder = ProgramBuilder::default();
 
     let (qkt_receiver, v_receiver) = {
-        let (a_snd, a_recv) = builder.bounded(short_depth);
-        let (b_snd, b_recv) = builder.bounded(short_depth);
-        let (qkt_sender, qkt_receiver) = builder.bounded(short_depth);
+        let (qkt_sender, qkt_receiver) = builder.bounded(32);
+
+        let (a_snd, a_recv) = builder.bounded(32);
+        let (b_snd, b_recv) = builder.bounded(32);
 
         builder.add_child(GeneratorContext::new(
             || q_matrices.iter().flat_map(|mat| mat.into_iter()).copied(),
@@ -153,6 +160,7 @@ fn main() {
             MatmulTiming {
                 dot_latency: args.common.matmul_latency,
                 dot_ii: args.common.matmul_ii,
+                reset_time: args.common.reset_time,
             },
             crate::templates::MatmulBehavior::Buffered,
             ShapeInfo {
@@ -218,10 +226,12 @@ fn main() {
                     sum_timings: ReduceTimings {
                         initiation_interval: sum_ii,
                         latency: sum_latency,
+                        reset_time: args.common.reset_time,
                     },
                     matmul_timings: MatmulTiming {
                         dot_latency: args.common.matmul_latency,
                         dot_ii: args.common.matmul_ii,
+                        reset_time: args.common.reset_time,
                     },
                 },
             )
@@ -244,14 +254,17 @@ fn main() {
                 max_config: ScanTimings {
                     initiation_interval: max_ii,
                     latency: max_latency,
+                    reset_time: args.common.reset_time,
                 },
                 residual_config: ReduceTimings {
                     initiation_interval: residual_ii,
                     latency: residual_latency,
+                    reset_time: args.common.reset_time,
                 },
                 prod_config: ReduceTimings {
                     initiation_interval: vector_prod_ii,
                     latency: vector_prod_latency,
+                    reset_time: args.common.reset_time,
                 },
                 scale_config: FlatmapTimings {
                     initiation_interval: args.common.div_ii,

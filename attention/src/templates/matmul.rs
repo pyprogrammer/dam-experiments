@@ -4,6 +4,7 @@ use dam::context_tools::*;
 pub struct MatmulTiming {
     pub dot_latency: u64,
     pub dot_ii: u64,
+    pub reset_time: u64,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -129,6 +130,7 @@ where
         loop {
             // Looping over M
             for m in 0..self.shape.m {
+                self.time.incr_cycles(self.timing.reset_time);
                 // Looping over N
                 for n in 0..self.shape.n {
                     let mut accum = OutputT::zero();
@@ -296,6 +298,7 @@ mod tests {
             MatmulTiming {
                 dot_latency: 1,
                 dot_ii: 1,
+                reset_time: 0,
             },
             ShapeInfo {
                 m: 512,
@@ -313,6 +316,7 @@ mod tests {
             MatmulTiming {
                 dot_latency: 1,
                 dot_ii: 1,
+                reset_time: 0,
             },
             ShapeInfo {
                 m: 512,

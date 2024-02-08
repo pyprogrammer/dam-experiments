@@ -3,6 +3,7 @@ use dam::context_tools::*;
 pub struct ReduceTimings {
     pub initiation_interval: u64,
     pub latency: u64,
+    pub reset_time: u64,
 }
 
 #[context_macro]
@@ -46,6 +47,7 @@ where
     fn run(&mut self) {
         // Infinite loop to handle all inputs
         loop {
+            self.time.incr_cycles(self.timings.reset_time);
             let mut accum: Option<OutT> = None;
             for iter in 0..self.reset_freq {
                 let input = match self.input.dequeue(&self.time) {
@@ -114,6 +116,7 @@ mod tests {
             super::ReduceTimings {
                 initiation_interval: 2,
                 latency: 1,
+                reset_time: 0,
             },
         ));
         let gold: Vec<_> = values.iter().map(|x| x.iter().sum()).collect();

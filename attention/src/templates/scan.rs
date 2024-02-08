@@ -5,6 +5,7 @@ use super::BroadcastSender;
 pub struct ScanTimings {
     pub initiation_interval: u64,
     pub latency: u64,
+    pub reset_time: u64,
 }
 
 #[context_macro]
@@ -49,6 +50,7 @@ where
         // Infinite loop to handle all inputs
         loop {
             let mut accum: Option<OutT> = None;
+            self.time.incr_cycles(self.timings.reset_time);
             for iter in 0..self.reset_freq {
                 let input = match self.input.dequeue(&self.time) {
                     Ok(ChannelElement { time: _, data }) => data,
@@ -114,6 +116,7 @@ mod tests {
             super::ScanTimings {
                 initiation_interval: 2,
                 latency: 1,
+                reset_time: 0,
             },
         ));
         let gold: Vec<_> = values

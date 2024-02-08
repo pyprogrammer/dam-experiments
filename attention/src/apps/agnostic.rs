@@ -139,6 +139,7 @@ where
         ReduceTimings {
             initiation_interval: 1,
             latency: 1,
+            reset_time: 0,
         },
     ));
 
