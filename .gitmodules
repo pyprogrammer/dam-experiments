@@ -1,4 +1,0 @@
-[submodule "comal"]
-	path = comal
-	url = git@github.com:stanford-ppl/comal.git
-	branch = dam-experiments
