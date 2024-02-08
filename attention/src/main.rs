@@ -39,10 +39,6 @@ struct CommandLineInterface {
     #[arg(long, default_value_t = false)]
     validate: bool,
 
-    /// Include QK^T computation
-    #[arg(long, default_value_t = false)]
-    compute_qkt: bool,
-
     /// Limit the number of worker threads
     #[arg(long)]
     workers: Option<usize>,
@@ -117,6 +113,8 @@ fn main() {
     let args = CommandLineInterface::parse();
     println!("{:?}", args);
 
+    let gen_start = std::time::Instant::now();
+
     // Construct the QKT multiplies
     let q_matrices = (0..args.batch)
         .map(|_| ArcArray::from_shape_simple_fn([args.length, args.dim], fastrand::f32))
@@ -128,6 +126,8 @@ fn main() {
     let v_matrices = (0..args.batch)
         .map(|_| ArcArray::from_shape_simple_fn([args.length, args.dim], fastrand::f32))
         .collect::<Vec<_>>();
+
+    println!("Took {:?} to generate random values", gen_start.elapsed());
 
     let short_depth = match args.mode {
         Implementation::Naive { short_depth, .. } => short_depth,
