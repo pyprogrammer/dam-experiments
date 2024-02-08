@@ -137,10 +137,10 @@ fn main() {
     let mut builder = ProgramBuilder::default();
 
     let (qkt_receiver, v_receiver) = {
-        let (qkt_sender, qkt_receiver) = builder.bounded(32);
+        let (qkt_sender, qkt_receiver) = builder.bounded(short_depth);
 
-        let (a_snd, a_recv) = builder.bounded(32);
-        let (b_snd, b_recv) = builder.bounded(32);
+        let (a_snd, a_recv) = builder.bounded(short_depth);
+        let (b_snd, b_recv) = builder.bounded(short_depth);
 
         builder.add_child(GeneratorContext::new(
             || q_matrices.iter().flat_map(|mat| mat.into_iter()).copied(),
