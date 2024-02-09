@@ -44,7 +44,7 @@ struct CommandLineInterface {
     workers: Option<usize>,
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand, Debug, Copy, Clone)]
 enum Implementation {
     Naive {
         #[arg(long)]
@@ -178,8 +178,14 @@ fn main() {
         builder.add_child(GeneratorContext::new(
             || {
                 v_matrices.iter().flat_map(|v| {
-                    (0..args.length)
-                        .flat_map(move |_| v.t().iter().copied().collect::<Vec<_>>().into_iter())
+                    (0..args.length).flat_map(move |_| match args.mode {
+                        Implementation::Naive { .. } => {
+                            v.t().iter().copied().collect::<Vec<_>>().into_iter()
+                        }
+                        Implementation::Agnostic { .. } => {
+                            v.iter().copied().collect::<Vec<_>>().into_iter()
+                        }
+                    })
                 })
             },
             v_snd,
